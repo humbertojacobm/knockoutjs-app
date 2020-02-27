@@ -1,6 +1,6 @@
-/// <reference path="knockout-2.3.0.js" />
-/// <reference path="jquery-ui-1.8.24.js" />
-/// <reference path="jquery-1.8.2.js" />
+/// <reference path="knockout-3.5.1.js" />
+/// <reference path="jquery-ui-1.12.1.js" />
+/// <reference path="jquery-3.4.1.js" />
 /// <reference path="ajax-util.js" />
 /// <reference path="ko-protected-observable.js" />
 
@@ -30,4 +30,6 @@ $(function() {
         }
         
     }
+
+    ko.applyBindings(viewModel);
 });
