@@ -21,6 +21,7 @@ $(function() {
         //data
         tags: ko.observableArray(data),
         tagToAdd: ko.observable(""),
+        selectedTag: ko.observable(null),
         //behaviours.
         addTag: function () {
             this.tags.push(
@@ -29,6 +30,10 @@ $(function() {
                 }
             );
             this.tagToAdd("");
+        },
+        selectTag: function() {
+            console.log(this,'inside selected tag');
+            viewModel.selectTag(this);
         }
         
     }
@@ -37,6 +42,8 @@ $(function() {
          var itemToRemove = ko.dataFor(this);
          viewModel.tags.remove(itemToRemove);
     });
+
+
 
     ko.applyBindings(viewModel);
 });
