@@ -33,5 +33,10 @@ $(function() {
         
     }
 
+    $(document).on("click", ".tag-delete", function () {
+         var itemToRemove = ko.dataFor(this);
+         viewModel.tags.remove(itemToRemove);
+    });
+
     ko.applyBindings(viewModel);
 });
