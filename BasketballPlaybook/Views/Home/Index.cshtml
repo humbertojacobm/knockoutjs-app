@@ -6,21 +6,21 @@
         <input type="text" placeholder="Add New Tag"
                data-bind="value: tagToAdd, valueUpdate: 'afterkeydown'"/>
         <button data-bind="click: addTag">+ Add</button>
-        <div data-bind="template: 'tagsTempl'"></div>
+        <ul data-bind="template: { name: 'tagsTempl', foreach: tags}">
+
+        </ul>
     </div>
 </div>
 
 <script id="tagsTempl" type="text/html">
-    <ul>
-        {{each tags}}
+    <ul>        
         <li class="tagItem">
-            <span>${Name}</span>
+            <span data-bind="text: Name"></span>
             <div>
                 <a href="#" class="tag-edit">Edit</a>
                 <a href="#" class="tag-delete">Delete</a>
             </div>
-        </li>
-        {{/each}}
+        </li>        
     </ul>
 </script>
 

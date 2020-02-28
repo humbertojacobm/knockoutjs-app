@@ -1,6 +1,7 @@
 /// <reference path="knockout-3.5.1.js" />
 /// <reference path="jquery-ui-1.12.1.js" />
 /// <reference path="jquery-3.4.1.js" />
+/// <reference path="jquery.tmpl.js" />
 /// <reference path="ajax-util.js" />
 /// <reference path="ko-protected-observable.js" />
 
@@ -27,6 +28,7 @@ $(function() {
                     Name: this.tagToAdd()
                 }
             );
+            this.tagToAdd("");
         }
         
     }
