@@ -6,8 +6,16 @@
         <input type="text" placeholder="Add New Tag"
                data-bind="value: tagToAdd, valueUpdate: 'afterkeydown'"/>
         <button data-bind="click: addTag">+ Add</button>
-        <ul data-bind="template: { name: 'tagsTempl', foreach: tags}">
-
+        <ul data-bind="foreach: tags">
+            
+               <li class="tagItem">
+                 <span data-bind="text: Name"></span>
+                 <div>
+                     <a href="#" class="tag-edit">Edit</a>
+                     <a href="#" class="tag-delete">Delete</a>
+                 </div>
+               </li>
+            
         </ul>
     </div>
 </div>
