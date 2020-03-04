@@ -20,18 +20,6 @@
     </div>
 </div>
 
-<script id="tagsTempl" type="text/html">
-    <ul>        
-        <li class="tagItem">
-            <span data-bind="text: Name"></span>
-            <div>
-                <a href="#" class="tag-edit">Edit</a>
-                <a href="#" class="tag-delete">Delete</a>
-            </div>
-        </li>        
-    </ul>
-</script>
-
 <div id="tagDialog" data-bind="with: selectedTag" >
     Tag Name:
     <input type="text" data-bind="value: Name" />
