@@ -1,5 +1,5 @@
-/// <reference path="knockout-1.3.0beta.debug.js" />
-/// <reference path="jquery-1.6.2.js" />
+/// <reference path="knockout-3.5.1.js" />
+/// <reference path="jquery-3.4.1.js" />
 
 ko.bindingHandlers.executeOnEnter = {
     init: function (element, valueAccessor, allBindingsAccessor, viewModel) {

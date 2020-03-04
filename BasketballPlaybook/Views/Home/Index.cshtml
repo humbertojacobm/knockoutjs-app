@@ -4,7 +4,7 @@
     </div>
     <div class="box-content">
         <input type="text" placeholder="Add New Tag"
-               data-bind="value: tagToAdd, valueUpdate: 'afterkeydown'"/>
+               data-bind="value: tagToAdd, valueUpdate: 'afterkeydown', event: { keypress: addOnEnter}"/>
         <button data-bind="click: addTag">+ Add</button>
         <ul data-bind="foreach: tags">
             

@@ -53,6 +53,12 @@ $(function() {
         },
         selectTag: function() {            
             viewModel.selectedTag(this);
+        },
+        addOnEnter: function (data, event) {
+            var keyCode = (event.which ? event.which : event.shiftKey);
+            if (keyCode === 13)
+                viewModel.addTag();
+            return true;
         }
         
     }
