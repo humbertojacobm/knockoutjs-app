@@ -30,16 +30,16 @@ $(function() {
 //        new tagItem("Team Defense", 8)
 //    ];
 
-    function tagItem(name, id){
-        return {
-            Name: ko.protectedObservable(name),
-            Id: ko.observable(id)
-        }
-    }
+    // function tagItem(name, id){
+    //     return {
+    //         Name: ko.protectedObservable(name),
+    //         Id: ko.observable(id)
+    //     }
+    // }
 
     var viewModel = {
         //data
-        tags: ko.observableArray(toTagItemArray(data)),
+        tags: ko.observableArray(ko.toProtectedObservableItemArray(data)),
         tagToAdd: ko.observable(""),
         selectedTag: ko.observable(null),
         //behaviours.
@@ -66,7 +66,7 @@ $(function() {
            buttons: {
                Save: function(){
                    $(this).dialog("close");
-                   viewModel.selectedTag().Name.commit();
+                   viewModel.selectedTag().commit();
                },
                Cancel: function() {
                    $(this).dialog("close");
@@ -78,11 +78,4 @@ $(function() {
 
 
     ko.applyBindings(viewModel);
-
-    function toTagItemArray(data) {
-        var tagItems = ko.utils.arrayMap(data, function (item) {
-           return new tagItem(item.Name, item.Id);
-        });
-        return tagItems;
-    }
 });
