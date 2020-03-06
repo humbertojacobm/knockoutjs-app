@@ -1,90 +1,126 @@
-/// <reference path="knockout-3.5.1.js" />
-/// <reference path="jquery-ui-1.12.1.min.js" />
-/// <reference path="jquery-3.4.1.js" />
-/// <reference path="jquery.tmpl.js" />
-/// <reference path="ajax-util.js" />
-/// <reference path="ko-protected-observable.js" />
 
-$(function() {
+$(function () {
     $("#tagDialog").hide();
 
-    // var data = [
-    //     { Id: 1, Name: "Ball Handling" },
-    //     { Id: 2, Name: "Passing" },
-    //     { Id: 3, Name: "Shooting" },
-    //     { Id: 4, Name: "Rebounding" },
-    //     { Id: 5, Name: "Transition" },
-    //     { Id: 6, Name: "Defense" },
-    //     { Id: 7, Name: "Team Offense" },
-    //     { Id: 8, Name: "Team Defense" }
-    // ];
-
-//     var data = [
-//        new tagItem("Ball Handling", 1),
-//        new tagItem("Passing", 2),
-//        new tagItem("Shooting", 3),
-//        new tagItem("Rebounding", 4),
-//        new tagItem("Transition", 5),
-//        new tagItem("Defense", 6),
-//        new tagItem("Team Offense", 7),
-//        new tagItem("Team Defense", 8)
-//    ];
-
-    // function tagItem(name, id){
-    //     return {
-    //         Name: ko.protectedObservable(name),
-    //         Id: ko.observable(id)
-    //     }
-    // }
-
-    $.getJSON("/tags", function (data){
-
+    $.getJSON("/api/tags", function (data) {
         var viewModel = {
-            //data
+            // data
             tags: ko.observableArray(ko.toProtectedObservableItemArray(data)),
             tagToAdd: ko.observable(""),
-            selectedTag: ko.observable(null),
-            //behaviours.
+            selectedTag: ko.observable(new ko.protectedObservableItem(data[0])),
+
+            // behaviors
             addTag: function () {
-                // this.tags.push(
-                //     {
-                //         Name: this.tagToAdd()
-                //     }
-                // );
-                var newTag = {Name: this.tagToAdd()};
+                var newTag = { Name: this.tagToAdd() };
                 this.tagToAdd("");
-                ajaxAdd("/tags", ko.toJSON(newTag), function (data){
+
+                ajaxAdd("/api/tags", ko.toJSON(newTag), function (data) {
                     viewModel.tags.push(new ko.protectedObservableItem(data));
                 });
             },
-            selectTag: function() {            
-                viewModel.selectedTag(this);
-            }        
-        }
 
-        $(document).on("click", ".tag-delete", function () {
+            selectTag: function () {
+                viewModel.selectedTag(this);
+            },
+
+            // Data (Drills)
+            currentTagDrills: ko.observableArray([]),
+            drillToAdd: ko.observable(""),
+            useDrillEditTemplate: ko.observable(null),
+            hoverDrill: ko.observable(),
+            clickedDrill: ko.observable(null),
+
+            // Behaviors (Drills)
+            editDrill: function () {
+                viewModel.useDrillEditTemplate(true);
+            },
+
+            tagNameFor: function (id) {
+                var tagItem = ko.utils.arrayFirst(viewModel.tags(), function (item) {
+                    return item.Id() === parseInt(id);
+                });
+                return tagItem.Name;
+            },
+
+            saveDrill: function () {
+                viewModel.selectedDrill().commit();
+                var drill = viewModel.selectedDrill();
+                viewModel.useDrillEditTemplate(null);
+                ajaxUpdate("/api/drills/" + drill.Id(), ko.toJSON(drill));
+            },
+
+            cancelDrillEdit: function () {
+                viewModel.useDrillEditTemplate(null);
+            },
+
+            addDrill: function () {
+                var newDrill = { Name: this.drillToAdd(), TagId: this.selectedTag().Id };
+                this.drillToAdd("");
+
+                ajaxAdd("/api/drills", ko.toJSON(newDrill), function (data) {
+                    viewModel.currentTagDrills.push(new ko.protectedObservableItem(data));
+                });
+            },
+
+            drillMouseOver: function () {
+                viewModel.hoverDrill(this);
+            },
+
+            drillMouseOut: function () {
+                viewModel.hoverDrill(null);
+            },
+
+            drillClick: function () {
+                viewModel.clickedDrill(this);
+            },
+
+            isClicked: function () {
+                return this === viewModel.clickedDrill();
+            }
+        }; // end viewModel
+
+        $(".tag-delete").live("click", function () {
             var itemToRemove = ko.dataFor(this);
             viewModel.tags.remove(itemToRemove);
+            ajaxDelete("/api/tags/" + itemToRemove.Id());
         });
 
-        $(document).on("click",".tag-edit", function(){
+        $(".tag-edit").live("click", function () {
+            viewModel.selectedTag(ko.dataFor(this));
             $("#tagDialog").dialog({
-            buttons: {
-                Save: function(){
-                    $(this).dialog("close");
-                    viewModel.selectedTag().commit();
-                },
-                Cancel: function() { 
-                    $(this).dialog("close");
+                buttons: {
+                    Save: function () {
+                        $(this).dialog("close");
+                        viewModel.selectedTag().Name.commit();
+                        ajaxUpdate("/api/tags/" + viewModel.selectedTag().Id(), ko.toJSON(viewModel.selectedTag()));
+                    },
+                    Cancel: function () {
+                        $(this).dialog("close");
+                    }
                 }
-            }
             });
         });
 
+        $(".drill-delete").live("click", function () {
+            var itemToRemove = ko.dataFor(this);
+            viewModel.currentTagDrills.remove(itemToRemove);
+            ajaxDelete("/api/drills/" + itemToRemove.Id());
+            viewModel.clickedDrill(null);
+            viewModel.hoverDrill(null);
+        });
 
+        viewModel.selectedDrill = ko.dependentObservable(function () {
+            var hoverDrill = this.hoverDrill();
+            var clickedDrill = this.clickedDrill();
+            return hoverDrill ? hoverDrill : (clickedDrill ? clickedDrill : this.currentTagDrills()[0]);
+        }, viewModel);
+
+        ko.computed(function () {
+            $.getJSON("/api/drills?tagId=" + this.selectedTag().Id(), function (data) {
+                viewModel.currentTagDrills(ko.toProtectedObservableItemArray(data));
+            });
+        }, viewModel);
 
         ko.applyBindings(viewModel);
-
-    })
-
+    });
 });
